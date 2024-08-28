@@ -1,1 +1,26 @@
-# Python __pycache__/ *.py[cod] *$py.class  # Flask instance/ .webassets-cache  # SQLite database files *.db  # Environment variables .env  # Virtual environment venv/ env/  # IDE-specific files .vscode/ .idea/  # OS-specific files .DS_Store Thumbs.db
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Flask
+instance/
+.webassets-cache
+
+# SQLite database files
+*.db
+
+# Environment variables
+.env
+
+# Virtual environment
+venv/
+env/
+
+# IDE-specific files
+.vscode/
+.idea/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
