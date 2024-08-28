@@ -1,19 +1,21 @@
 import os
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
-from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash, check_password_hash
 import requests
 import logging
 
-# Get the absolute path of the directory containing this file
-basedir = os.path.abspath(os.path.dirname(__file__))
+app = Flask(__name__)
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'fallback_secret_key')
 
-load_dotenv() 
+# Configure database
+database_url = os.environ.get('DATABASE_URL')
+if database_url and database_url.startswith("postgres://"):
+    database_url = database_url.replace("postgres://", "postgresql://", 1)
 
-app = Flask(__name__, template_folder=os.path.join(basedir, 'templates'))
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 db = SQLAlchemy(app)
 
 # Set up logging
@@ -93,7 +95,7 @@ def dictionary():
     app.logger.debug('Accessing dictionary route')
     if 'user_id' not in session:
         return redirect(url_for('login'))
-    
+
     if request.method == 'POST':
         word = request.form['word']
         definition = get_word_definition(word)
@@ -101,12 +103,10 @@ def dictionary():
         db.session.add(new_word)
         db.session.commit()
         flash(f'Word "{word}" added to your dictionary')
-    
-    # Query words and order them by id in descending order
+
     user_words = Word.query.filter_by(user_id=session['user_id']).order_by(Word.id.desc()).all()
     return render_template('dictionary.html', words=user_words)
 
-if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-    app.run(debug=True)
+# Create tables
+with app.app_context():
+    db.create_all()
