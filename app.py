@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 import requests
 import logging
+import sys
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'fallback_secret_key')
@@ -107,6 +108,25 @@ def dictionary():
     user_words = Word.query.filter_by(user_id=session['user_id']).order_by(Word.id.desc()).all()
     return render_template('dictionary.html', words=user_words)
 
-# Create tables
+
+@app.errorhandler(500)
+def internal_error(error):
+    app.logger.error('Server Error: %s', (error))
+    return "500 error: Internal Server Error", 500
+
+@app.errorhandler(Exception)
+def unhandled_exception(e):
+    app.logger.error('Unhandled Exception: %s', (e))
+    return "500 error: Internal Server Error", 500
+
+# Attempt database connection
 with app.app_context():
-    db.create_all()
+    try:
+        db.create_all()
+        app.logger.info("Database tables created successfully")
+    except Exception as e:
+        app.logger.error(f"Error creating database tables: {str(e)}")
+        print(f"Error creating database tables: {str(e)}", file=sys.stderr)
+
+if __name__ == '__main__':
+    app.run(debug=True)
