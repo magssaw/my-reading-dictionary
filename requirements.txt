@@ -19,9 +19,8 @@ MarkupSafe==2.1.5
 msgspec==0.18.6
 packaging==24.0
 pillow==10.4.0
-psycopg2-binary==2.9.9
 PyDictionary==2.0.1
-python-dotenv==1.0.1
+python-dotenv==3.9
 requests==2.32.2
 soupsieve==2.6
 SQLAlchemy==2.0.30
