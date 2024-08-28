@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+    <h2>My Dictionary</h2>
+    <form method="POST">
+        <input type="text" id="word" name="word" required placeholder="Enter a word">
+        <button type="submit" class="btn">Look up</button>
+    </form>
+    <div class="word-list">
+        <h3>My Words</h3>
+        <ul>
+        {% for word in words %}
+            <li>
+                <strong>{{ word.word }}</strong>: {{ word.definition }}
+            </li>
+        {% endfor %}
+        </ul>
+    </div>
+{% endblock %}
